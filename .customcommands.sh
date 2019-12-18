@@ -6,7 +6,7 @@
 # connect via ssh to pawsey
 function connectmagnus()
 {
-	ssh greifm@magnus.pawsey.org.au
+	ssh username@magnus.pawsey.org.au
 }
 
 # copy files using scp, see .securecopymagnus for help and information
@@ -29,11 +29,11 @@ function securecopymagnus()
 	if [[ $drive == '-s' ]]
 	then
 		echo "begin secure copy from scratch drive"
-		scp greifm@magnus.pawsey.org.au:/scratch/pawsey0110/greifm/$source $deposit
+		scp username@magnus.pawsey.org.au:/scratch/pawsey0110/username/$source $deposit
 	elif [[ $drive == '-g' ]]
 	then
 		echo "begin secure copy from group drive"
-		scp greifm@magnus.pawsey.org.au:/group/pawsey0110/greifm/$source $deposit
+		scp username@magnus.pawsey.org.au:/group/pawsey0110/username/$source $deposit
 	elif [[ $drive == "-h" ]]
 	then
 		less ~/.securecopymagnushelp
