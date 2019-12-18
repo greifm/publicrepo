@@ -1,0 +1,17 @@
+This is the help file for the securecopymagnus program
+
+The program uses scp to coppy files.
+Please change paths for personal use.
+This program is maintained by Michael under a GNU General Public Licence; email 19319740@student.curtin.edu.au
+
+use
+	securecopymagnus [drive] path/in/drive.txt [directory]
+
+where "drive" may be 	"-s" for scratch or
+			"-g" for group or
+			"-h" for help
+and "directory" may be blank
+
+
+
+EOF
