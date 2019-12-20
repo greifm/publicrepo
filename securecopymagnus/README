@@ -1,0 +1,18 @@
+make_securecopymagnus.sh
+by greifm
+requires ~/.bashrc, .securecopymagnushelp
+licence GNU 3.0
+
+# description
+make_securecopymagnus creates a bash script, securecopymagnus, that eases in the arduous task of using scp
+This program is specific to the molecular dynamics team at Curtin University, please feel free to change and distribute under a GNU licence
+
+# use
+To use this program execute bash make_securecopymagnus.sh
+It will create .securecopymagnus.sh in your home directory using your username
+It will ask if you wish to add it to your .bashrc source and act accordingly
+
+
+.securecopymagnus.sh
+# use
+see .securecopymagnushelp
