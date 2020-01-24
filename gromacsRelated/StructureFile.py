@@ -5,16 +5,18 @@
 #
 # use:
 #   create object using an input .gro file
-#   edit with .removelines([[pattern, column, argument]]); indexing at zero
+#   can be used as a class or directly using user input
+#
+#   edit files with .removelines([[pattern, column, argument]])
 #       removelines takes a list input of a list containing a pattern (str), column (int), and argument (str)
-#           any number of pca lists can be given
+#           lots of pca lists can be given
 #           the argument can either be "include" or "exclude"
 #               include is essentially an AND statement with other pca(include)'s for deletion
 #               exclude will exclude that line from deletion, despite include statements
+#               use includes before excludes, order is otherwise not important
 #   examples in main()
 #
 # todo:
-#   have clear user input
 #   make _createAtomArray more efficient
 
 class StructureFile:
@@ -100,12 +102,78 @@ class StructureFile:
         except Exception as e1:
             print ("error in removelines of structureFile object:\n", e1)
 
-def main():     # test file
+def testfile():     # test file
     test = StructureFile("testfilein.gro")  # create object and load data into it
     carbonNotPept = [["C", 1, "include"],["ALA", 0, "exclude"], ["TRP", 0, "exclude"]]
-    test.removelines( carbonNotPept )    # delete carbon atoms except for those in ALA
+    test.removelines( carbonNotPept )    # delete carbon atoms except for those in ALA and TRP
     test.removelines( [["TRP", 0, "include"], ["2", 0, "include"]] )    # delete tpr if it is 2tpr
     test.removelines( [["162FA24", 0, "include"], ["O", 1, "include"]] ) # delete all oxygens from res 1672FA24
     test.write("testfileout.gro")   # save to file
+
+def menu():
+    print( "\nWelcome to StructureFile's .gro line management system\n" )
+    gro = fileinput()
+    print( "\ninstruction:\t you will be asked for a search term, which column it can be found in, and if you wish for the term to be inclusive or exclusive.\n\t - the search term can be / is a subset of the search string.\n\t - the column can either be the first (0) or the second (1) column of the gro file; (res name, atom)\n\t - if the inclusive flag is used multiple search's can be made, lines will only be deleted if they meet both search's\n\t - if the exclusive flag is used the line will not be deleted, even if it meets the inclusive search's. \n\t - use inclusive search(s) first, then exclusive(s); or the results will be unexpected\n")
+
+    cont = contTwo = contThree = True
+    while cont:
+        array = []
+        ii = 0
+        while contTwo:
+            array.append( inputspa() )
+            contTwo = inputanother("do you wish to add another search term to this?")
+            ii += 1
+        print("deleting line(s)")
+        gro.removelines(array)
+        cont = inputanother("do you wish to delete more lines from the file?")
+    while contThree:
+        try:
+            gro.write(input( "what is the file name you wish to save this file as?: " ))
+            contThree = False
+        except Exception:
+            print("error, please try again")
+    print("done")
+
+def fileinput():
+    try:
+        gro = StructureFile( input( "what is the file name you wish to input? " ) )
+    except Exception as e1:
+        print( "error in file input: ", e1, "\nprogram will now close; please enter a real file name next time")
+        exit()
+    return gro
+
+def inputspa():
+    pattern = column = arg = None
+    pattern = input( "enter search term: ")
+    while column is None:
+        column = input( "enter column number: ")
+        try:
+            column = int(column)
+        except Exception:
+            print ( "Invalid choice", column, "must be int" )
+            column = None
+    while arg is None:
+        arg = input( "enter (i)nclusive or (e)xclusive: ")
+        if arg == 'i':
+            argument = "include"
+        elif arg == 'e':
+            argument = "exclude"
+        else:
+            print( "Invalid choice", arg, "must be i or e" )
+            arg = None
+    array = [pattern, column, argument]
+    return array
+
+def inputanother(x):
+    while True:
+        another = input( x + " (y) (n): ")
+        if another == 'y':
+            return True
+        elif another == 'n':
+            return False
+        else:
+            print( "Invalid choice", another, "must be y or n" )
+
+    
 if __name__ == "__main__":
-    main()
+    menu()
