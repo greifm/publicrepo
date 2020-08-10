@@ -6,7 +6,7 @@
 # it will then repeat
 # defauts are work for 45 minutes, break for 5, and repeat infinitely
 
-date_str=${date}
+date_str=$(date)
 date_int_start=$(date +%s)
 alias spd-say="spd-say -r -50 "
 
@@ -68,7 +68,7 @@ done
 trap exit_safe SIGINT
 
 # begin repeating timer
-echo $date_str
+echo "$date_str"
 if [ $repeat -eq 0 ]
 then
 	echo "Begining study; work for $work minutes, break for $brek minutes. This will repeat indefinitely"
