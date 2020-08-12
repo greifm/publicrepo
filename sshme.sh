@@ -20,7 +20,7 @@ usage () { echo "Usage: $0 [ -s SERVER ] [ -f FROM ] [ -t TO ] [ -r REVERSE ] [ 
 exit_abnormal() { usage; exit 1; }
 
 # defaults
-to="."; reverse=false; connect=true, server=none, from=none
+to="."; reverse=false; connect=true; server=none; from=none
 
 # getoptions
 if [ $# = 0 ]; then exit_abnormal; fi
