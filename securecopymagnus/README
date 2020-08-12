@@ -1,3 +1,7 @@
+* This program has been replaced with sshme *
+It remains here for posterety only
+
+
 make_securecopymagnus.sh
 by greifm
 requires ~/.bashrc, .securecopymagnushelp
