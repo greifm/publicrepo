@@ -1,7 +1,13 @@
 #!/bin/bash
 
 # sshme
-# an alternative to ssh
+# an alternative to ssh and scp
+# can be used accross multiple servers
+# usage
+# if -t to and -f from are specified it will act as scp, if not it will act as ssh, 
+# in all cases -s server must be specified
+# by default the scp command will copy from server to current directory
+# to copy to server use -r reverse flag
 
 #todo
 #   * expansion
