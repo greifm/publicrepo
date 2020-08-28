@@ -44,7 +44,7 @@ jobsubsh ()
 #!/bin/bash -l
 #SBATCH --account=INSERT_YOUR_GROUP_HERE
 #SBATCH --job-name=Coacervate_bench
-#SBATCH --partition=workq
+#SBATCH --partition=workq 
 #SBATCH --time=00:time_var:00
 #SBATCH --nodes=nodes_var
 #SBATCH --export=ALL
@@ -58,6 +58,5 @@ echo "Node list:"
 sacct --format=JobID,NodeList%100 -j $SLURM_JOB_ID
 module swap PrgEnv-cray PrgEnv-gnu
 module load gromacs/2018.3
-let "time_max = time_var / 60 - 0.05"
-srun --export=all -N nodes_var -n cores_var mdrun_mpi -s OLysRNA_min_eq_prod.tpr -c coacervate_prod0.gro -v -g log.log -x traj_comp.xtc -maxh $time_max
+srun --export=all -N nodes_var -n cores_var mdrun_mpi -s OLysRNA_min_eq_prod.tpr -c coacervate_prod0.gro -v -g log.log -x traj_comp.xtc -maxh 0.time_vim
 }
