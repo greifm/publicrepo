@@ -9,7 +9,7 @@
 # define nodes to test 
 #   all other defining is taken from the jobsub.sh file
 
-nodes=(1) # 2 3 4 5 6 7 8 9 10 11 12)
+nodes=(1 2 3 4 5 6 7 8 9 10 11 12)
 time_in=15 # in minutes
 
 for ii in ${nodes[*]}
@@ -40,7 +40,7 @@ done
 jobsubsh ()
 {
 #!/bin/bash -l
-#SBATCH --account=pawsey0110
+#SBATCH --account=INSERT_YOUR_GROUP_HERE
 #SBATCH --job-name=Coacervate_bench
 #SBATCH --partition=workq
 #SBATCH --time=00:time_var:00
