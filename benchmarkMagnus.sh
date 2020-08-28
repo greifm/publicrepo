@@ -10,7 +10,8 @@
 #   all other defining is taken from the jobsub.sh file
 
 nodes=(1 2 3 4 5 6 7 8 9 10 11 12)
-time_in=15 # in minutes
+time_in=15 # time requested in minutes, 
+time_min=25 # time maxh in decimal
 
 for ii in ${nodes[*]}
 do
@@ -21,12 +22,13 @@ do
     let cores=($ii * 24)
     sed -i "s/cores_var/$cores/g" jobsub.sh
     sed -i "s/time_var/$time_in/g" jobsub.sh
+    sed -i "s/time_vim/$time_min/g" jobsub.sh
     cd ..
 done
 
 # submit 
 echo '############ Listing files ###############'
-for ii in $nodes; do echo $ii; ls $ii; done
+for ii in ${nodes[*]}; do echo $ii; ls $ii; done
 echo "Would you like to submit?"
 read nothing
 
