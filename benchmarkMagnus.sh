@@ -3,6 +3,7 @@
 # a program to benchmark gromacs md on magnus
 # place this in a dir with all required files
 # requires a job file with variables nodes_var and cores_var in the file jobsub.sh
+# requires the jobsub.sh file and all files required to run your sim in a dir called files
 
 # define nodes to test 
 #   all other defining (such as time) is taken from the jobsub.sh file
