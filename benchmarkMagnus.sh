@@ -11,7 +11,7 @@
 
 nodes=(1 2 3 4 5 6 7 8 9 10 11 12)
 time_in=15 # time requested in minutes, 
-time_min=25 # time maxh in decimal
+time_min="0.25" # time maxh in decimal
 
 for ii in ${nodes[*]}
 do
@@ -29,8 +29,9 @@ done
 # submit 
 echo '############ Listing files ###############'
 for ii in ${nodes[*]}; do echo $ii; ls $ii; done
-echo "Would you like to submit?"
-read nothing
+echo "Would you like to submit? (yes / no)"
+read answer
+if [[ $answer = "no" ]] || [[ $answer = "n" ]] ; then exit 0; fi
 
 for ii in ${nodes[*]}
 do
@@ -58,5 +59,5 @@ echo "Node list:"
 sacct --format=JobID,NodeList%100 -j $SLURM_JOB_ID
 module swap PrgEnv-cray PrgEnv-gnu
 module load gromacs/2018.3
-srun --export=all -N nodes_var -n cores_var mdrun_mpi -s OLysRNA_min_eq_prod.tpr -c coacervate_prod0.gro -v -g log.log -x traj_comp.xtc -maxh 0.time_vim
+srun --export=all -N nodes_var -n cores_var mdrun_mpi -s OLysRNA_min_eq_prod.tpr -c coacervate_prod0.gro -v -g log.log -x traj_comp.xtc -maxh time_vim
 }
