@@ -1,0 +1,60 @@
+#!/bin/bash -l
+#SBATCH --account=pawsey0110
+#SBATCH --job-name=minimisation
+#SBATCH --partition=job_var
+#SBATCH --time=time24_var
+#SBATCH --nodes=nodes_var
+#SBATCH --export=ALL
+#======START=====
+module load slurm
+echo "The current job ID is $SLURM_JOB_ID"
+echo "Running on $SLURM_JOB_NUM_NODES nodes"
+echo "Using $SLURM_NTASKS_PER_NODE tasks per node"
+echo "A total of $SLURM_NTASKS tasks is used"
+echo "Node list:"
+sacct --format=JobID,NodeList%100 -j $SLURM_JOB_ID
+module swap PrgEnv-cray PrgEnv-gnu
+module load gromacs/gromacs_var
+
+# insert run
+emstep_range=(emstep_range_var)
+count=0
+nstep_var=nstep_var_var
+mintime=mintime_var
+
+leavenow=false
+while [[ $leavenow == false ]] ;
+do
+    emstep_var=${emstep_range[$count]}
+    # make and edit mdps
+    cp min_sd min_sd.mdp
+    sed -i "s/nstep_var/$nstep_var/g" min_sd.mdp
+    sed -i "s/emstep_var/$emstep_var/g" min_sd.mdp
+    cp min_cg min_cg.mdp
+    sed -i "s/nstep_var/$nstep_var/g" min_cg.mdp
+    sed -i "s/emstep_var/$emstep_var/g" min_cg.mdp
+
+    for ii in min_sd min_cg
+    do
+        timethen=$(date +%s)
+
+        gmx grompp -f ${ii}.mdp -c gro_var -n index_var -p top_var -o out.tpr
+        srun --mpi=pmi2 -N nodes_var -n cores_var mdrun_mpi_d -s out.tpr -c gro_var -v -g log.log 
+    
+        timenow=$(date +%s); let "timecheck = timenow - timethen"
+        if [[ $timecheck -lt $mintime ]] ; then         # use next emstep in range as it is not running for long
+            let "count = count + 1"     
+            if [[ ${#emstep_range[@]} == $count ]] ; then   # as count indexs at zero
+                let "count = count - 1"
+                leavenow=true                           # exit if we are at max emstep range
+            fi
+        elif [[ $timecheck -lt 1 ]]; then
+            leavenow=true                               # exit if it seems it didnt run at all
+        fi
+
+        if [[ "$(tail -n 1 log.log)" != *"Finished mdrun"* ]]; then leavenow=true; fi # end loop if run did not finish
+        mv log.log log$(date +%s).log # cleanup
+
+        let "nstep_var = nstep_var + nstep_var_var "    # extend nsteps, otherwise it will think its done
+    done
+done
