@@ -21,7 +21,11 @@ emstep_range=(emstep_range_var)
 count=0
 nstep_var=nstep_var_var
 mintime=mintime_var
+crashtime=1
+debug=debug.log
+echo "emsteps ${emstep_range[*]} nstep $nstep_var mintime $mintime crashtime $crashtime Beginloop" > $debug
 
+loopn=0
 leavenow=false
 while [[ $leavenow == false ]] ;
 do
@@ -34,6 +38,7 @@ do
     sed -i "s/nstep_var/$nstep_var/g" min_cg.mdp
     sed -i "s/emstep_var/$emstep_var/g" min_cg.mdp
 
+    echo "loop $loopn emstep $emstep_var" >> $debug
     for ii in min_sd min_cg
     do
         timethen=$(date +%s)
@@ -42,19 +47,29 @@ do
         srun --mpi=pmi2 -N nodes_var -n cores_var mdrun_mpi_d -s out.tpr -c gro_var -v -g log.log 
     
         timenow=$(date +%s); let "timecheck = timenow - timethen"
+        echo "$ii nsteps $nstep_var timecheck $timecheck" >> $debug
         if [[ $timecheck -lt $mintime ]] ; then         # use next emstep in range as it is not running for long
+            # check its not crashing quickly
+            echo "minetime triggered" >> $debug
+            if [[ $timecheck -lt $crashtime ]] && [[ $ii == min_sd ]] ; then 
+                leavenow=true                               # exit if it seems it didnt run at all on steep
+                echo "crashtime triggered leave=true= $leavenow" >> $debug
+            fi
+            # assume its not just crashing
             let "count = count + 1"     
+            echo "countchanged $count" >> $debug
             if [[ ${#emstep_range[@]} == $count ]] ; then   # as count indexs at zero
                 let "count = count - 1"
                 leavenow=true                           # exit if we are at max emstep range
+                echo "count triggered ${#emstep_range[@]} , $count" >> $debug
             fi
-        elif [[ $timecheck -lt 1 ]]; then
-            leavenow=true                               # exit if it seems it didnt run at all
         fi
 
-        if [[ "$(tail -n 1 log.log)" != *"Finished mdrun"* ]]; then leavenow=true; fi # end loop if run did not finish
+        #if [[ "$(tail -n 1 log.log)" != *"Finished mdrun"* ]]; then leavenow=true; fi # end loop if run did not finish
+        echo "\"" >> $debug; tail -n 16 log.log >> $debug; echo "\"" >> $debug
         mv log.log log$(date +%s).log # cleanup
 
         let "nstep_var = nstep_var + nstep_var_var "    # extend nsteps, otherwise it will think its done
     done
+    let loopn+=1 
 done
