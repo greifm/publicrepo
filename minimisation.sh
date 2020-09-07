@@ -12,7 +12,7 @@
 #   2.  2. check the program
 #           did not crash immediately ifso it will stop
 #           took too little time (ie system is running for few steps) ifso the next emstep will be used
-#           the log file has "Finished mdrun" in the last line ifnot it will stop
+#           the log file has "Finished mdrun" in the last line ifnot it will stop (currently disabled)
 
 # create files
 echo -e 'integrator = cg\nnsteps = nstep_var\nemtol = 28\nemstep = emstep_var\n\npbc = xyz\nrlist = 1.0\nnstlist = 1\n\ncoulombtype = PME\nrcoulomb = 1.0\nvdwtype = cut-off\nrvdw = 1.0\n\nnstxout = 100\nnstvout = 100\nnstfout = 100\nnstlog = 1\nnstenergy = 1\n\n' > min_cg
