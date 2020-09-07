@@ -1,0 +1,19 @@
+integrator              = cg 
+nsteps                  = nstep_var
+emtol                   = 28
+emstep                  = emstep_var
+
+pbc                     = xyz
+rlist                   = 1.0
+nstlist                 = 1
+
+coulombtype             = PME
+rcoulomb                = 1.0
+vdwtype                 = cut-off
+rvdw                    = 1.0
+
+nstxout                 = 100
+nstvout                 = 100
+nstfout                 = 100
+nstlog                  = 1
+nstenergy               = 1
