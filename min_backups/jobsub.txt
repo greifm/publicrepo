@@ -48,15 +48,15 @@ do
     
         timenow=$(date +%s); let "timecheck = timenow - timethen"
         echo "$ii nsteps $nstep_var timecheck $timecheck" >> $debug
-        if [[ $timecheck -lt $mintime ]] ; then         # use next emstep in range as it is not running for long
+        if [[ $timecheck -lt $mintime ]] && [[ $ii == min_sd ]]; then  
             # check its not crashing quickly
             echo "minetime triggered" >> $debug
-            if [[ $timecheck -lt $crashtime ]] && [[ $ii == min_sd ]] ; then 
-                leavenow=true                               # exit if it seems it didnt run at all on steep
+            if [[ $timecheck -lt $crashtime ]] ; then 
+                leavenow=true                               # exit if it seems it didnt run at all
                 echo "crashtime triggered leave=true= $leavenow" >> $debug
             fi
             # assume its not just crashing
-            let "count = count + 1"     
+            let "count = count + 1"     # use next emstep in range as it is not running for long
             echo "countchanged $count" >> $debug
             if [[ ${#emstep_range[@]} == $count ]] ; then   # as count indexs at zero
                 let "count = count - 1"
@@ -65,11 +65,12 @@ do
             fi
         fi
 
-        #if [[ "$(tail -n 1 log.log)" != *"Finished mdrun"* ]]; then leavenow=true; fi # end loop if run did not finish
-        echo "\"" >> $debug; tail -n 16 log.log >> $debug; echo "\"" >> $debug
+        #if [[ "$(tail -n 1 log.log)" != *"Finished mdrun"* ]]; then leavenow=true; fi # end loop if run did not finish 
+        # triggers on any failure, cg is expected to fail when steep runs full or has not min enough
+        echo "beginlog" >> $debug; tail -n 16 log.log >> $debug; echo "endlog" >> $debug
         mv log.log log$(date +%s).log # cleanup
-
-        let "nstep_var = nstep_var + nstep_var_var "    # extend nsteps, otherwise it will think its done
     done
     let loopn+=1 
+    let " nstep_var = nstep_var + nstep_var_var "   # extend nsteps, otherwise it will think its done
+                                    # triggers at end of cg, therefore if steep runs full cg will not
 done
